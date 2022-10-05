@@ -1,0 +1,34 @@
+class node:
+    def __init__(self,data=None):
+        self.data= data
+        self.children=[]
+        self.father=None
+    def createtree(self, values,edges):
+        nodekeys= set(key for keys in edges for key in keys)
+        nodes={key: node(values[key-1]) for key in nodekeys}#values[key] if indexing starts from 0
+        for p,c in edges:
+            nodes[p].children.append(nodes[c])
+            nodes[c].father=nodes[p]
+            nodekeys.remove(c)
+        for root in nodekeys:
+            return nodes[root]
+    def __repr__(self, indent=""):
+        return (indent + str(self.data) + "\n"
+                + "".join(child.__repr__(indent+"  ") 
+                            for child in self.children))
+[n,q]= list(map(int,raw_input().split(' ')))
+values = list(raw_input())
+
+#print(values)
+edges=[]
+queries=[]
+for i in range(n-1):
+    edges.append(list(map(int,raw_input().split(' '))))
+for i in range (q):
+    queries.append(list(raw_input().split(' ')))
+    #print(queries)
+    queries[-1][0]=int(queries[-1][0])
+tree=node()
+tree=tree.createtree(values,edges)
+#print(tree.data,tree.children)
+print(tree)
