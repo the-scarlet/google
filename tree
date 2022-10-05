@@ -1,11 +1,12 @@
 class node:
-    def __init__(self,data=None):
+    def __init__(self,data=None,rank=None):
         self.data= data
         self.children=[]
         self.father=None
+        self.rank=rank#the index in edges
     def createtree(self, values,edges):
         nodekeys= set(key for keys in edges for key in keys)
-        nodes={key: node(values[key-1]) for key in nodekeys}#values[key] if indexing starts from 0
+        nodes={key: node(values[key-1],key) for key in nodekeys}#values[key] if indexing starts from 0
         for p,c in edges:
             nodes[p].children.append(nodes[c])
             nodes[c].father=nodes[p]
@@ -16,6 +17,21 @@ class node:
         return (indent + str(self.data) + "\n"
                 + "".join(child.__repr__(indent+"  ") 
                             for child in self.children))
+    def searchrank(self, rank):
+        if self.rank==rank: 
+            return self
+        node=0
+        for i in self.children:
+            node=i.searchrank(rank)
+            if node:
+                return node
+        return 0
+    def searchdata(self, data):#return how many matches
+        s=0
+        if self.data==data:
+            s+=1
+        return s+sum(i.searchdata(data) for i in self.children)
+        
 [n,q]= list(map(int,raw_input().split(' ')))
 values = list(raw_input())
 
@@ -31,4 +47,12 @@ for i in range (q):
 tree=node()
 tree=tree.createtree(values,edges)
 #print(tree.data,tree.children)
-print(tree)
+#print(tree)
+#print ((tree.search(1)).rank)
+for u,c in queries:
+    node=tree.searchrank(u)
+    s= node.searchdata(c)
+    print(s)
+
+
+
